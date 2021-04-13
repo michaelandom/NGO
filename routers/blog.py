@@ -7,18 +7,18 @@ from repository import blog
 from oauth2 import get_current_user
 router = APIRouter(
     prefix="/blog",
-    tags=["blog"]
+    tags=["training"]
 )
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.showBlog)
 def create_Blog(request: schemas.Blog, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
-    return blog.create_blog(request, db)
+    return blog.create_blog(request, db,current_user)
 
 
 @router.get("/", response_model=List[schemas.showBlog])
 def get_Blog(db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
-    return blog.get_all(db)
+    return blog.get_all(db,current_user)
 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK, response_model=schemas.showBlog)

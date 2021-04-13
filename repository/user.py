@@ -9,9 +9,9 @@ def get_all(db: Session):
     return blogs
 
 
-def create_user(request: schemas.Blog, db: Session):
+def create_user(request: schemas.User, db: Session):
     hashedPassword = Hash.get_password_hash(request.password)
-    new_user = models.User(name=request.name, email=request.email, password=hashedPassword)
+    new_user = models.User(name=request.name, email=request.email, password=hashedPassword,type =request.type,region = request.region )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -38,7 +38,7 @@ def update_user(id, request: schemas.User, db: Session):
     users = db.query(models.User).filter(models.User.id == id)
     if not users.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"cant find user with id {id}")
-    users.update({"name": request.name, "email": request.email, "password": request.password},
+    users.update({"name": request.name, "email": request.email, "password": request.password,"type": request.type,"region": request.region},
                  synchronize_session=False)
     db.commit()
     return "updated"
