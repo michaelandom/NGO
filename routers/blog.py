@@ -2,7 +2,7 @@ from fastapi import APIRouter,Depends, status
 import schemas
 from database import get_db
 from sqlalchemy.orm import Session
-from typing import List
+from fastapi_pagination import Page,add_pagination,paginate
 from repository import blog
 from oauth2 import get_current_user
 router = APIRouter(
@@ -16,9 +16,9 @@ def create_Blog(request: schemas.Blog, db: Session = Depends(get_db), current_us
     return blog.create_blog(request, db,current_user)
 
 
-@router.get("/", response_model=List[schemas.showBlog])
+@router.get("/", response_model=Page[schemas.showBlog])
 def get_Blog(db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
-    return blog.get_all(db,current_user)
+    return paginate(blog.get_all(db,current_user))
 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK, response_model=schemas.showBlog)
@@ -32,3 +32,5 @@ def delete_Blog(id, db: Session = Depends(get_db), current_user: schemas.User = 
 @router.put("/{id}", status_code=status.HTTP_202_ACCEPTED)
 def update_Blog(id, request: schemas.Blog, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)):
     return blog.update_blog(id, request, db)
+
+add_pagination(router)
